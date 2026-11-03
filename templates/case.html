@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Материалы дела</h1>
+  <ul class="materials">
+    {% for mid, m in materials.items() %}
+      <li>
+        <a href="{{ url_for('study', mid=mid) }}">{{ m.title }}</a>
+        {% if mid in studied %}<span class="done">✓ изучено</span>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  <a class="btn" href="{{ url_for('accuse') }}">Перейти к обвинению</a>
+{% endblock %}

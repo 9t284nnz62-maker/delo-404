@@ -1,0 +1,296 @@
+/* Общие настройки и цвета */
+:root {
+    --background: #11151b;
+    --surface: #1b212a;
+    --text: #f0eee8;
+    --muted: #b2b8c2;
+    --accent: #e2b76b;
+    --border: #343c48;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    line-height: 1.7;
+}
+
+a {
+    color: inherit;
+}
+
+a:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 5px;
+}
+
+/* Шапка */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 24px 6%;
+    border-bottom: 1px solid var(--border);
+}
+
+.site-logo {
+    color: var(--accent);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.site-caption {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* Основная область */
+.main-content {
+    flex: 1;
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 28px 70px;
+}
+
+.hero {
+    padding: 90px 0 70px;
+}
+
+.eyebrow {
+    margin: 0 0 16px;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+h1,
+h2,
+h3 {
+    font-family: Georgia, serif;
+    line-height: 1.15;
+}
+
+h1 {
+    margin: 0 0 24px;
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 400;
+}
+
+.hero-description {
+    max-width: 520px;
+    margin: 0 0 32px;
+    color: var(--muted);
+    font-size: 17px;
+}
+
+/* Кнопки */
+.button {
+    display: inline-block;
+    padding: 13px 24px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.button-primary {
+    background: var(--accent);
+    color: #19160f;
+}
+
+.button-primary:hover {
+    background: #f0ca87;
+    transform: translateY(-2px);
+}
+
+/* Карточка расследования */
+.case-section {
+    padding-top: 36px;
+    border-top: 1px solid var(--border);
+    scroll-margin-top: 24px;
+}
+
+.case-section h2 {
+    margin: 0 0 28px;
+    font-size: 32px;
+    font-weight: 400;
+}
+
+.case-card {
+    max-width: 680px;
+    padding: 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+    border-radius: 10px;
+}
+
+.case-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.case-number {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.case-card h3 {
+    margin: 24px 0 16px;
+    font-size: 30px;
+    font-weight: 400;
+}
+
+.case-card p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.case-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    margin: 24px 0;
+    padding: 0;
+    list-style: none;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* Нижняя подпись */
+.site-footer {
+    padding: 22px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Оформление на телефоне */
+@media (max-width: 600px) {
+    .site-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 20px;
+    }
+
+    .main-content {
+        padding: 0 20px 44px;
+    }
+
+    .hero {
+        padding: 56px 0 44px;
+    }
+
+    .case-card {
+        padding: 24px;
+    }
+
+    .case-card h3 {
+        font-size: 26px;
+    }
+
+    .button {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .button {
+        transition: none;
+    }
+
+    .button-primary:hover {
+        transform: none;
+    }
+}
+/* Страница расследования */
+.back-link {
+    display: inline-block;
+    margin-bottom: 28px;
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: var(--accent);
+}
+
+.case-section + .case-section {
+    margin-top: 40px;
+}
+
+.case-card h2 {
+    margin: 0 0 24px;
+    font-size: 26px;
+    font-weight: 400;
+}
+
+.case-card p + p {
+    margin-top: 18px;
+}
+
+.case-card .document-signature {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    color: var(--accent);
+    font-size: 14px;
+}
+/* Стили для страницы обвинения */
+.suspect-card {
+  display: block;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.suspect-card:hover { border-color: #c9a227; }
+.testimony {
+  display: block;
+  color: #999;
+  font-size: 0.9em;
+  margin-top: 5px;
+  font-style: italic;
+}
+.doc-text { line-height: 1.6; font-size: 1.1em; }

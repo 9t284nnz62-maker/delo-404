@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Обвинение · Дело №{{ case.number }}{% endblock %}
+{% block body_class %}page-accuse{% endblock %}
+
+{% block content %}
+<div class="accuse">
+    <a href="{{ url_for('game.case_view', case_id=case.id) }}" class="back-link">← Вернуться к делу</a>
+
+    <header class="accuse__header">
+        <span class="tag">Дело №{{ case.number }}</span>
+        <h1 class="accuse__title">Выдвинуть обвинение</h1>
+        <p class="accuse__lead">
+            Внимательно изучите подозреваемых. Если ошибётесь — дело будет закрыто,
+            а преступник останется на свободе.
+        </p>
+    </header>
+
+    {% if error %}
+        <div class="alert alert--error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" class="accuse__form">
+        <div class="suspects suspects--selectable">
+            {% for s in case.suspects %}
+                <label class="suspect suspect--selectable">
+                    <input type="radio" name="suspect" value="{{ s.id }}" required>
+                    <div class="suspect__inner">
+                        <div class="suspect__portrait">{{ s.initial }}</div>
+                        <h3 class="suspect__name">{{ s.name }}</h3>
+                        <p class="suspect__role">{{ s.role }}</p>
+                        <p class="suspect__motive">Мотив: {{ s.motive }}</p>
+                    </div>
+                </label>
+            {% endfor %}
+        </div>
+
+        <div class="accuse__actions">
+            <a href="{{ url_for('game.case_view', case_id=case.id) }}" class="btn btn--ghost">Отмена</a>
+            <button type="submit" class="btn btn--primary">Подтвердить обвинение</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

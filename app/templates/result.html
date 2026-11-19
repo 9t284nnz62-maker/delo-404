@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Результат · Дело №{{ case.number }}{% endblock %}
+{% block body_class %}page-result{% endblock %}
+
+{% block content %}
+<div class="result result--{% if correct %}win{% else %}lose{% endif %}">
+    <div class="result__stamp">{% if correct %}РЕШЕНО{% else %}НЕ РАСКРЫТО{% endif %}</div>
+    <h1 class="result__title">
+        {% if correct %}Дело закрыто{% else %}Дело повисло в воздухе{% endif %}
+    </h1>
+
+    {% if correct %}
+        <p class="result__lead">Ваша версия подтвердилась. Подозреваемый задержан.</p>
+    {% else %}
+        <p class="result__lead">
+            Обвинение не подтвердилось. Улик недостаточно — настоящий преступник ушёл от ответа.
+        </p>
+    {% endif %}
+
+    <article class="paper paper--large">
+        <div class="paper__header">
+            <div class="paper__label">Пояснение следователя</div>
+            <h2 class="paper__title">Что произошло на самом деле</h2>
+        </div>
+        <div class="paper__body">
+            <p>{{ case.solution.explanation }}</p>
+        </div>
+    </article>
+
+    <div class="result__actions">
+        <a href="{{ url_for('game.case_view', case_id=case.id) }}" class="btn btn--ghost">
+            Вернуться к делу
+        </a>
+        <form method="post" action="{{ url_for('game.reset_case', case_id=case.id) }}" style="display:inline">
+            <button type="submit" class="btn btn--primary">Пройти заново</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

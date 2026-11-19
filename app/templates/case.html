@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Дело №{{ case.number }} · {{ case.title }}{% endblock %}
+{% block body_class %}page-case{% endblock %}
+
+<!-- DEBUG -->
+<pre style="color:#f88">progress = {{ progress | tojson }}</pre>
+{% block content %}
+<div class="case">
+    <header class="case__header">
+        <div class="case__meta">
+            <span class="tag">Дело №{{ case.number }}</span>
+            <span class="tag tag--status">{{ case.status }}</span>
+        </div>
+        <h1 class="case__title">{{ case.title }}</h1>
+        <p class="case__subtitle">{{ case.subtitle }}</p>
+
+        <div class="progress">
+            <div class="progress__bar">
+                <div class="progress__fill" style="width: {{ progress.pct }}%"></div>
+            </div>
+            <span class="progress__label">
+                Изучено улик: {{ progress.studied }} / {{ progress.total }}
+            </span>
+        </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+        <button class="tab" data-tab="brief" role="tab">📋 Дело</button>
+        <button class="tab" data-tab="evidence" role="tab">📌 Доска улик</button>
+        <button class="tab" data-tab="suspects" role="tab">🕵 Подозреваемые</button>
+        <button class="tab" data-tab="phone" role="tab">📱 Телефон</button>
+        <button class="tab" data-tab="email" role="tab">✉ Почта</button>
+        <button class="tab" data-tab="accuse" role="tab">⚖ Обвинение</button>
+    </nav>
+
+    <div class="tabs-content">
+
+        <!-- Дело -->
+        <section class="panel" data-panel="brief">
+            <article class="paper paper--large">
+                <div class="paper__header">
+                    <div class="paper__label">Завязка</div>
+                    <h2 class="paper__title">Что произошло</h2>
+                </div>
+                <div class="paper__body">{{ case.briefing | safe }}</div>
+                <div class="paper__facts">
+                    {% for fact in case.facts %}
+                        <div class="fact">
+                            <dt>{{ fact.label }}</dt>
+                            <dd>{{ fact.value }}</dd>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+        </section>
+
+        <!-- Доска улик -->
+        <section class="panel" data-panel="evidence">
+            <div class="corkboard">
+                {% for mat in case.materials.values() %}
+                    {% set is_studied = mat.id in studied %}
+                    <div class="evidence"
+                         id="m-{{ mat.id }}"
+                         data-material-id="{{ mat.id }}"
+                         style="--rotate: {{ loop.index0 * 1.6 - 2 }}deg">
+                        <span class="evidence__pin"></span>
+
+                        {% if mat.available %}
+                            <button class="evidence__card {% if is_studied %}is-studied{% endif %}"
+                                    data-modal="modal-{{ mat.id }}">
+                                <span class="evidence__icon">{{ mat.icon }}</span>
+                                <span class="evidence__title">{{ mat.title }}</span>
+                                <span class="evidence__subtitle">{{ mat.subtitle }}</span>
+                                {% if is_studied %}
+                                    <span class="badge badge--ok">✓ изучено</span>
+                                {% else %}
+                                    <span class="badge badge--new">новая</span>
+                                {% endif %}
+                            </button>
+                        {% else %}
+                            <div class="evidence__card evidence__card--locked">
+                                <span class="evidence__icon">🔒</span>
+                                <span class="evidence__title">{{ mat.title }}</span>
+                                <span class="evidence__subtitle">{{ mat.hint }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Подозреваемые -->
+        <section class="panel" data-panel="suspects">
+            <div class="suspects">
+                {% for s in case.suspects %}
+                    <article class="suspect">
+                        <div class="suspect__portrait">{{ s.initial }}</div>
+                        <h3 class="suspect__name">{{ s.name }}</h3>
+                        <p class="suspect__role">{{ s.role }}</p>
+                        <p class="suspect__motive">Мотив: {{ s.motive }}</p>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Телефон -->
+        <section class="panel" data-panel="phone">
+            <div class="locked-screen">
+                <div class="locked-screen__icon">📱</div>
+                <h3>Телефон на экспертизе</h3>
+                <p>Устройство извлечено из воды. Требуется разблокировка и восстановление данных.</p>
+                <p class="locked-screen__hint">Появится на следующем этапе расследования.</p>
+            </div>
+        </section>
+
+        <!-- Почта -->
+        <section class="panel" data-panel="email">
+            <div class="locked-screen">
+                <div class="locked-screen__icon">✉</div>
+                <h3>Почта недоступна</h3>
+                <p>Необходимо получить ордер на доступ к аккаунтам жертвы.</p>
+                <p class="locked-screen__hint">Появится на следующем этапе расследования.</p>
+            </div>
+        </section>
+
+        <!-- Обвинение -->
+        <section class="panel" data-panel="accuse">
+            <div class="accuse-teaser">
+                <div class="accuse-teaser__icon">⚖</div>
+                <h3>Выдвинуть обвинение</h3>
+                <p>Когда будете готовы назвать имя, переходите к финальному шагу.</p>
+                <a href="{{ url_for('game.accuse', case_id=case.id) }}" class="btn btn--primary">
+                    К обвинению →
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="case__footer">
+        <form method="post" action="{{ url_for('game.reset_case', case_id=case.id) }}">
+            <button type="submit" class="btn btn--danger-ghost">↺ Сбросить прогресс</button>
+        </form>
+    </footer>
+</div>
+
+<!-- Модальные окна с уликами -->
+{% for mat in case.materials.values() if mat.available %}
+    <div class="modal" id="modal-{{ mat.id }}">
+        <div class="modal__dialog">
+            <button class="modal__close" data-close aria-label="Закрыть">×</button>
+            <article class="paper">
+                <div class="paper__header">
+                    <div class="paper__label">Улика {{ mat.id | upper }}</div>
+                    <h2 class="paper__title">{{ mat.title }}</h2>
+                    <p class="paper__subtitle">{{ mat.subtitle }}</p>
+                </div>
+                <div class="paper__body">{{ mat.content | safe }}</div>
+                <div class="paper__footer">
+                    {% if mat.id in studied %}
+                        <span class="badge badge--ok">✓ Уже изучено</span>
+                        <button class="btn btn--ghost" data-close>Закрыть</button>
+                    {% else %}
+                        <form method="post"
+                              action="{{ url_for('game.study_material', case_id=case.id, material_id=mat.id) }}">
+                            <button type="submit" class="btn btn--primary">Отметить изученным</button>
+                        </form>
+                        <button class="btn btn--ghost" data-close>Позже</button>
+                    {% endif %}
+                </div>
+            </article>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}
